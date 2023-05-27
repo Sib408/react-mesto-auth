@@ -38,7 +38,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://sib408.github.io/mesto-react/",
+  "homepage": "https://github.com/Sib408/react-mesto-auth.git",
   "devDependencies": {
     "gh-pages": "^5.0.0"
   }

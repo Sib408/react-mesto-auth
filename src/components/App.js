@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { useNavigate, Route, Routes, Navigate } from 'react-router-dom';
+import { useNavigate, Route, Routes, Navigate } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -11,13 +11,13 @@ import CurrentUserContext from "../contexts/CurrentUserContext";
 import PopupEditAvatar from "./PopupEditAvatar";
 import PopupEditProfile from "./PopupEditProfile";
 import PopupAddCard from "./PopupAddCard";
-import Login from './Login.js';
-import Register from './Register.js';
-import ProtectedRoute from './ProtectedRoute.js';
-import InfoTooltip from './InfoTooltip.js';
-import { register, authorize, getContent } from '../utils/mestoAuth';
+import Login from "./Login.js";
+import Register from "./Register.js";
+import ProtectedRoute from "./ProtectedRoute.js";
+import InfoTooltip from "./InfoTooltip.js";
+import { register, authorize, getContent } from "../utils/mestoAuth";
 
-import successLogo from "../image/SuccessLogo.svg"
+import successLogo from "../image/SuccessLogo.svg";
 import failLogo from "../image/FailLogo.svg";
 function App() {
   const navigate = useNavigate();
@@ -28,7 +28,6 @@ function App() {
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
 
-
   const [loggedIn, setLoggedIn] = useState(false);
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
   const [message, setMessage] = useState(false);
@@ -36,9 +35,10 @@ function App() {
 
   useEffect(() => {
     handleTokenCheck();
+
     Promise.all([api.getInitialCards(), api.getProfile()])
-      .then(([cards, userData]) => {
-        setCurrentUser(userData);
+      .then(([cards, userInfo]) => {
+        setCurrentUser(userInfo);
         setCards(cards);
       })
       .catch((err) => console.log(err));
@@ -49,19 +49,19 @@ function App() {
   }
 
   function handleTokenCheck() {
-    const jwt = localStorage.getItem('jwt');
+    const jwt = localStorage.getItem("jwt");
     if (jwt) {
-        getContent(jwt)
-            .then((res) => {
-                if (res) {
-                    setUserInfo({ email: res.data.email })
-                    setLoggedIn(true);
-                    navigate('/');
-                }
-            })
-            .catch((err) => console.log(err));
+      getContent(jwt)
+        .then((res) => {
+          if (res) {
+            setUserInfo({ email: res.data.email });
+            setLoggedIn(true);
+            navigate("/");
+          }
+        })
+        .catch((err) => console.log(err));
     }
-}
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -144,120 +144,148 @@ function App() {
     setIsAddPlacePopupOpen(true);
   }
 
-
-
-function handleRegister(email, password) {
-  register(email, password)
+  function handleRegister(email, password) {
+    register(email, password)
       .then((result) => {
-          if (result) {
-              setMessage({ imgPath: successLogo, text: 'Вы успешно зарегистрировались!' });
-              navigate('/signin');
-          }
+        if (result) {
+          setMessage({
+            imgPath: successLogo,
+            text: "Вы успешно зарегистрировались!",
+          });
+          navigate("/signin");
+        }
       })
-      .catch(() => setMessage({ imgPath: failLogo, text: 'Что-то пошло не так! Попробуйте ещё раз.' }))
-      .finally(() => setIsInfoTooltipOpen(true))
-}
+      .catch(() =>
+        setMessage({
+          imgPath: failLogo,
+          text: "Что-то пошло не так! Попробуйте ещё раз.",
+        })
+      )
+      .finally(() => setIsInfoTooltipOpen(true));
+  }
 
-
-function handleLogin(email, password) {
-  authorize(email, password)
+  function handleLogin(email, password) {
+    authorize(email, password)
       .then((result) => {
-          if (result) {
-              localStorage.setItem('jwt', result.token);
-              setLoggedIn(true);
-              navigate('/');
-              setUserInfo(email)
-          }
+        if (result) {
+          localStorage.setItem("jwt", result.token);
+          setLoggedIn(true);
+          navigate("/");
+          setUserInfo(email);
+        }
       })
       .catch(() => {
-          setMessage({ imgPath: failLogo, text: 'Что-то пошло не так! Попробуйте ещё раз.' })
-          setIsInfoTooltipOpen(true)
-      })
-}
+        setMessage({
+          imgPath: failLogo,
+          text: "Что-то пошло не так! Попробуйте ещё раз.",
+        });
+        setIsInfoTooltipOpen(true);
+      });
+  }
 
-function handleSignOut() {
-  setLoggedIn(false);
-  setUserInfo("");
-  localStorage.removeItem('jwt');
-  navigate('/sign-in');
-}
+  function handleSignOut() {
+    setLoggedIn(false);
+    setUserInfo("");
+    localStorage.removeItem("jwt");
+    navigate("/sign-in");
+  }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
         <div className="page">
           <div className="page__container">
-            <Header
-              onSignOut={handleSignOut}
-              userEmail={userInfo}/>
-              <Routes>
-              <Route element={<ProtectedRoute loggedIn={loggedIn}></ProtectedRoute>}>
-              <Route exact path={'/'} element={<>
-            <Main
-              cards={cards}
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-            />
-            <Footer />
-            <PopupWithForm
-              name="delete"
-              title="Вы уверены?"
-              onClose={closeAllPopups}
-              buttonText={"Да"}
-            ></PopupWithForm>
+            <Header onSignOut={handleSignOut} userEmail={userInfo} />
+            <Routes>
+              <Route
+                element={<ProtectedRoute loggedIn={loggedIn}></ProtectedRoute>}
+              >
+                <Route
+                  exact
+                  path={"/"}
+                  element={
+                    <>
+                      <Main
+                        cards={cards}
+                        onEditAvatar={handleEditAvatarClick}
+                        onEditProfile={handleEditProfileClick}
+                        onAddPlace={handleAddPlaceClick}
+                        onCardClick={handleCardClick}
+                        onCardLike={handleCardLike}
+                        onCardDelete={handleCardDelete}
+                      />
+                      <Footer />
+                      <PopupWithForm
+                        name="delete"
+                        title="Вы уверены?"
+                        onClose={closeAllPopups}
+                        buttonText={"Да"}
+                      ></PopupWithForm>
 
-            <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+                      <ImagePopup
+                        card={selectedCard}
+                        onClose={closeAllPopups}
+                      />
 
-            <PopupEditProfile
-              isOpen={isEditProfilePopupOpen}
-              onClose={closeAllPopups}
-              onUpdateUser={handleUpdateUser}
-            />
+                      <PopupEditProfile
+                        isOpen={isEditProfilePopupOpen}
+                        onClose={closeAllPopups}
+                        onUpdateUser={handleUpdateUser}
+                      />
 
-            <PopupAddCard
-              isOpen={isAddPlacePopupOpen}
-              onClose={closeAllPopups}
-              onAddPlace={handleAddPlaceSubmit}
-            />
+                      <PopupAddCard
+                        isOpen={isAddPlacePopupOpen}
+                        onClose={closeAllPopups}
+                        onAddPlace={handleAddPlaceSubmit}
+                      />
 
-            <PopupEditAvatar
-              isOpen={isEditAvatarPopupOpen}
-              onClose={closeAllPopups}
-              onUpdateAvatar={handleUpdateAvatar}
-            />
-             </>}></Route>
-             </Route>
-             <Route path='/signup' element={<>
-                        <Register onRegister={handleRegister} />
-                        <InfoTooltip
-                            name='tooltip'
-                            isOpen={isInfoTooltipOpen}
-                            onClose={closeAllPopups}
-                            title={message.text}
-                            imgPath={message.imgPath}
-                        />
-                    </>}></Route>
-             <Route path='/signin' element={<>
-                        <Login onLogin={handleLogin} />
-                        <InfoTooltip
-                            name='tooltip'
-                            isOpen={isInfoTooltipOpen}
-                            onClose={closeAllPopups}
-                            title={message.text}
-                            imgPath={message.imgPath}
-                        />
-                    </>}>
-                    </Route>
-                    <Route path={'*'} element={<Navigate replace to={loggedIn ? '/' : '/signin'} />} />
-                    </Routes>
+                      <PopupEditAvatar
+                        isOpen={isEditAvatarPopupOpen}
+                        onClose={closeAllPopups}
+                        onUpdateAvatar={handleUpdateAvatar}
+                      />
+                    </>
+                  }
+                ></Route>
+              </Route>
+              <Route
+                path="/signup"
+                element={
+                  <>
+                    <Register onRegister={handleRegister} />
+                    <InfoTooltip
+                      name="tooltip"
+                      isOpen={isInfoTooltipOpen}
+                      onClose={closeAllPopups}
+                      title={message.text}
+                      imgPath={message.imgPath}
+                    />
+                  </>
+                }
+              ></Route>
+              <Route
+                path="/signin"
+                element={
+                  <>
+                    <Login onLogin={handleLogin} />
+                    <InfoTooltip
+                      name="tooltip"
+                      isOpen={isInfoTooltipOpen}
+                      onClose={closeAllPopups}
+                      title={message.text}
+                      imgPath={message.imgPath}
+                    />
+                  </>
+                }
+              ></Route>
+              <Route
+                path={"*"}
+                element={<Navigate replace to={loggedIn ? "/" : "/signin"} />}
+              />
+            </Routes>
           </div>
         </div>
       </div>
-
     </CurrentUserContext.Provider>
   );
 }
