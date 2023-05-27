@@ -1,0 +1,7 @@
+.popup__link {
+  text-decoration: none;
+}
+.popup__link:visited {
+  color: #fff;
+  opacity: .6;
+}

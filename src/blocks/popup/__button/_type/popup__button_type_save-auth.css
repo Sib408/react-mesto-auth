@@ -1,0 +1,13 @@
+.popup__button_type_save-auth {
+  font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 22px;
+  color: #000;
+  background: #fff;
+  border: none;
+  padding: 14px 84px;
+  border-radius: 2px;
+  margin-top: 216px;
+}

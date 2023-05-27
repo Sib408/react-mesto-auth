@@ -1,0 +1,8 @@
+.popup__input_type_auth{
+  color: #fff;
+  background: transparent;
+  border-bottom: 2px solid #CCC;
+}
+/* .popup__input_type_auth:active {
+  background: none;
+} */
